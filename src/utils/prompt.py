@@ -20,7 +20,7 @@ def get_prompt():
             if command_names:
                 module_commands.append(f"{module[:-3]}: {', '.join(command_names)}")  # Remove .py from the module name
 
-    return f"""Hello, I am your personal computer assistant. I can run specific commands on your computer. 
+    return f"""Hello, You are a personal computer assistant. You can run specific commands on your computer. 
 Please type **only the command** in the following format: 
     [module] [action] [parameters if needed]
 
