@@ -1,3 +1,4 @@
+#Command: files createDir [path\directory name]
 #Command: files create [path\file name]
 #Command: files delete [path\file name]
 #Command: files copy [source path] [destination path]
@@ -11,7 +12,27 @@ import shutil
 
 
 def control_files(command):
-    if "create" in command:
+    if "createDir" in command:
+        words = command.split()
+        if len(words) < 2:
+            print("Error: No path specified for the directory.")
+            return
+        
+        index = words.index("createDir")
+        path = words[index + 1]
+        
+        try:
+            # Create the directory
+            os.makedirs(path)
+            print(f"Directory created at: {path}")
+        except FileExistsError:
+            print(f"Error: Directory '{path}' already exists.")
+        except PermissionError:
+            print(f"Error: Permission denied to create directory at '{path}'.")
+        except Exception as e:
+            print(f"An error occurred: {e}")
+
+    elif "create" in command:
         # Extract the path
         words = command.split()
         index = words.index("create")
@@ -28,7 +49,6 @@ def control_files(command):
         # Delete the file
         os.remove(f"{path}")
         print(f"File deleted from {path}.")
-
 
     elif "copy" in command:
         # Extract the source and destination paths from the command
@@ -68,7 +88,7 @@ def control_files(command):
         print(f"Files in {path}:")
         for file in files:
             print(file)
-            
+
     elif "search" in command:
         # Extract the path and file name from the command
         words = command.split()

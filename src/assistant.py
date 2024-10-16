@@ -36,12 +36,32 @@ def handle_command(command):
     else:
         print("Command not recognized.")
 
+# if __name__ == "__main__":
+#     while True:
+#         # Get the user's input
+#         response = ollama.chat(model='codegemma:7b', messages=[{'role': 'system', 'content': get_prompt()},
+#                                                                 {'role': 'user', 'content': input('Command: ')}])
+#         command = response['message']['content']
+#         print(command)
+
+#         handle_command(command)
+
 if __name__ == "__main__":
+    conversation_history = [{'role': 'system', 'content': get_prompt()}]  # Initialize with system prompt
+
     while True:
         # Get the user's input
-        response = ollama.chat(model='codegemma:7b', messages=[{'role': 'system', 'content': get_prompt()},
-                                                                {'role': 'user', 'content': input('Command: ')}])
+        user_input = input('Command: ')
+        conversation_history.append({'role': 'user', 'content': user_input})  # Append user input to history
+
+        # Send conversation history to the model
+        response = ollama.chat(model='codegemma:7b', messages=conversation_history)
+        
         command = response['message']['content']
         print(command)
 
+        # Append AI response to conversation history
+        conversation_history.append({'role': 'assistant', 'content': command})
+
+        # Handle the command
         handle_command(command)
