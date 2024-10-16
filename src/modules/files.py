@@ -1,11 +1,14 @@
 #Command: files createDir [path\directory name]
 #Command: files create [path\file name]
+#Command: files write [path\file name] [content]
+#Command: files read [path\file name]
 #Command: files delete [path\file name]
 #Command: files copy [source path] [destination path]
 #Command: files move [source path] [destination path]
 #Command: files rename [path] [old name] [new name]
 #Command: files list [path]
 #Command: files search [path] [file name]
+
 
 import os
 import shutil
@@ -41,6 +44,27 @@ def control_files(command):
         open(f"{path}", "w").close()
         print(f"File created at {path}.")
         
+    elif "write" in command:
+        # Extract the path and content from the command
+        words = command.split()
+        index = words.index("write")
+        path = words[index + 1]
+        content = " ".join(words[index + 2:])
+        # Write the content to the file
+        with open(f"{path}", "w") as file:
+            file.write(content)
+        print(f"Content written to {path}.")
+    elif "read" in command:
+        # Extract the path from the command
+        words = command.split()
+        index = words.index("read")
+        path = words[index + 1]
+        # Read the content of the file
+        with open(f"{path}", "r") as file:
+            content = file.read()
+        print(f"Content of {path}:")
+        print(content)
+
     elif "delete" in command:
         # Extract the path
         words = command.split()
@@ -95,12 +119,14 @@ def control_files(command):
         index = words.index("search")
         path = words[index + 1]
         file_name = words[index + 2]
-        # Search for the file in the directory
-        files = os.listdir(path)
-        if file_name in files:
-            print(f"File {file_name} found in {path}.")
+        # Search for the file in the directory, and its subdirectories
+        # Print the path of the file if found or a message if not found
+        for root, dirs, files in os.walk(path):
+            if file_name in files:
+                print(f"File found at: {os.path.join(root, file_name)}")
+                break
         else:
-            print(f"File {file_name} not found in {path}.")
+            print(f"File '{file_name}' not found in '{path}' or its subdirectories.")
     else:
         print("Files command not recognized.")
 

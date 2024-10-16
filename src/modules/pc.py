@@ -9,9 +9,9 @@ def control_pc(command):
         #get the application name
         words = command.split()
         index = words.index("open")
-        app_name = words[index + 1]
+        app_name = " ".join(words[index + 1:])
         #open the application
-        os.system(f"start {app_name}")
+        os.system(f"{app_name}")
         print(f"Opening {app_name}.")
 
     elif "sleep" in command:
