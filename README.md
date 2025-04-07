@@ -1,6 +1,7 @@
 # Personal AI Assistant
 
 Welcome to the Personal AI Assistant project! This assistant is designed to help you control various aspects of your computer and perform tasks using voice or text commands. Built using Python and the Ollama library, this project is modular and easily expandable. I designed this project to be a fun and educational way to learn about AI and voice recognition (in the future 👀).
+> ❗ Requires Ollama to work. uses Ollama ai models on your computer in order to identify commands. ❗
 
 ![Personal AI Assistant Demo](https://i.imgur.com/1mMf4UW.gif)
 
