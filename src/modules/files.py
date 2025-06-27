@@ -14,119 +14,130 @@ import os
 import shutil
 
 
-def control_files(command):
-    if "createDir" in command:
-        words = command.split()
-        if len(words) < 2:
-            print("Error: No path specified for the directory.")
+def execute(args):
+    if args is None or len(args) == 0:
+        return("No command provided.")
+        return
+    
+    command = args.get("action", None).lower()  # Convert command to lowercase for case-insensitive matching
+
+
+    if "createdir" in command:
+        return("Creating directory...")
+        path =  args.get("path", None)  # Get the path from the arguments
+        if path is None:
+            return("No path provided for directory creation.")
             return
-        
-        index = words.index("createDir")
-        path = words[index + 1]
-        
         try:
             # Create the directory
             os.makedirs(path)
-            print(f"Directory created at: {path}")
+            return(f"Directory created at: {path}")
         except FileExistsError:
-            print(f"Error: Directory '{path}' already exists.")
+            return(f"Error: Directory '{path}' already exists.")
         except PermissionError:
-            print(f"Error: Permission denied to create directory at '{path}'.")
+            return(f"Error: Permission denied to create directory at '{path}'.")
         except Exception as e:
-            print(f"An error occurred: {e}")
+            return(f"An error occurred: {e}")
 
     elif "create" in command:
-        # Extract the path
-        words = command.split()
-        index = words.index("create")
-        path = words[index + 1]
+        path = args.get("path", None)  # Get the path from the arguments
+        if path is None:
+            return("No path provided for file creation.")
+            return
         # Create the file
         open(f"{path}", "w").close()
-        print(f"File created at {path}.")
+        return(f"File created at {path}.")
         
     elif "write" in command:
-        # Extract the path and content from the command
-        words = command.split()
-        index = words.index("write")
-        path = words[index + 1]
-        content = " ".join(words[index + 2:])
+        path = args.get("path", None)  # Get the path from the arguments
+        if path is None:
+            return("No path provided for file writing.")
+            return
+        content  = args.get("content", None)  # Get the content from the arguments
+        if content is None:
+            return("No content provided for file writing.")
+            return
+        
         # Write the content to the file
         with open(f"{path}", "w") as file:
             file.write(content)
-        print(f"Content written to {path}.")
+        return(f"Content written to {path}.")
+
     elif "read" in command:
-        # Extract the path from the command
-        words = command.split()
-        index = words.index("read")
-        path = words[index + 1]
+        path = args.get("path", None)  # Get the path from the arguments
+        if path is None:
+            return("No path provided for file reading.")
+            return
         # Read the content of the file
         with open(f"{path}", "r") as file:
             content = file.read()
-        print(f"Content of {path}:")
-        print(content)
+        return(f"Content of {path}:")
+        return(content)
 
     elif "delete" in command:
-        # Extract the path
-        words = command.split()
-        index = words.index("delete")
-        path = words[index + 1]
-        # Delete the file
-        os.remove(f"{path}")
-        print(f"File deleted from {path}.")
+       path = args.get("path", None)  # Get the path from the arguments
+       if path is None:
+            return("No path provided for file deletion.")
+            return
+       # Delete the file
+       os.remove(f"{path}")
+       return(f"File deleted from {path}.")
 
     elif "copy" in command:
-        # Extract the source and destination paths from the command
-        words = command.split()
-        index = words.index("copy")
-        source_path = words[index + 1]
-        dest_path = words[index + 2]
+        source_path = args.get("source_path", None)  # Get the source path from the arguments
+        dest_path = args.get("destination_path", None)  # Get the destination path from the arguments
+        if source_path is None or dest_path is None:
+            return("Source or destination path not provided for file copying.")
+            return
         # Copy the file
         shutil.copy(f"{source_path}", f"{dest_path}")
-        print(f"File copied from {source_path} to {dest_path}.")
+        return(f"File copied from {source_path} to {dest_path}.")
     elif "move" in command:
-        # Extract the source and destination paths from the command
-        words = command.split()
-        index = words.index("move")
-        source_path = words[index + 1]
-        dest_path = words[index + 2]
+        source_path = args.get("source_path", None)
+        dest_path = args.get("destination_path", None)
+        if source_path is None or dest_path is None:
+            return("Source or destination path not provided for file moving.")
+            return
         # Move the file
         shutil.move(f"{source_path}", f"{dest_path}")
-        print(f"File moved from {source_path} to {dest_path}.")
+        return(f"File moved from {source_path} to {dest_path}.")
     elif "rename" in command:
-        # Extract the path, old name, and new name from the command
-        words = command.split()
-        index = words.index("rename")
-        path = words[index + 1]
-        old_name = words[index + 2]
-        new_name = words[index + 3]
+        path =  args.get("path", None)  # Get the path from the arguments
+        old_name =  args.get("old_name", None)  # Get the old name from the arguments
+        new_name =   args.get("new_name", None)  # Get the new name from the arguments
+        if path is None or old_name is None or new_name is None:
+            return("Path, old name or new name not provided for file renaming.")
+            return
         # Rename the file
         os.rename(f"{path}/{old_name}", f"{path}/{new_name}")
-        print(f"File {old_name} renamed to {new_name} in {path}.")
+        return(f"File {old_name} renamed to {new_name} in {path}.")
     elif "list" in command:
         # Extract the path from the command
-        words = command.split()
-        index = words.index("list")
-        path = words[index + 1]
+        path = args.get("path", None)
+        if path is None:
+            return("No path provided for listing files.")
+            return
         # List the files in the directory, make it look nice
         files = os.listdir(path)
-        print(f"Files in {path}:")
+        return(f"Files in {path}:")
         for file in files:
-            print(file)
+            return(file)
 
     elif "search" in command:
         # Extract the path and file name from the command
-        words = command.split()
-        index = words.index("search")
-        path = words[index + 1]
-        file_name = words[index + 2]
+        path = args.get("path", None)
+        file_name = args.get("file_name", None)
+        if path is None or file_name is None:
+            return("Path or file name not provided for file searching.")
+            return
         # Search for the file in the directory, and its subdirectories
-        # Print the path of the file if found or a message if not found
+        # return the path of the file if found or a message if not found
         for root, dirs, files in os.walk(path):
             if file_name in files:
-                print(f"File found at: {os.path.join(root, file_name)}")
+                return(f"File found at: {os.path.join(root, file_name)}")
                 break
         else:
-            print(f"File '{file_name}' not found in '{path}' or its subdirectories.")
+            return(f"File '{file_name}' not found in '{path}' or its subdirectories.")
     else:
-        print("Files command not recognized.")
+        return("Files command not recognized.")
 

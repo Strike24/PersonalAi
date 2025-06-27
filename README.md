@@ -1,4 +1,4 @@
-# Personal AI Assistant
+<!-- # Personal AI Assistant
 
 Welcome to the Personal AI Assistant project! This assistant is designed to help you control various aspects of your computer and perform tasks using voice or text commands. Built using Python and the Ollama library, this project is modular and easily expandable. I designed this project to be a fun and educational way to learn about AI and voice recognition (in the future 👀).
 
@@ -55,3 +55,17 @@ To get started with the Personal AI Assistant, follow these steps:
    git clone https://github.com/yourusername/personal-ai-assistant.git
    cd personal-ai-assistant
    ``` -->
+
+# Personal AI Assistant 💻
+
+Simple AI assistant built with Python and Google's Gemini API. <br>
+This assistant can perform various tasks on your computer using voice or text commands. It is modular and easily expandable, built for educational purposes.
+Using Gemini's Function Calling feature, the assistant can execute Python functions to perform tasks like controlling media playback, managing files, and more.
+
+### Current Modules
+
+- **Media Control**: Control media playback.
+- **File Management**: Create, delete, rename, list and search for files and folders.
+- **System Commands**: Execute system commands like shutdown and restart.
+- **Memory Management**: Remember and recall information.
+  Coming soon: Reminders, weather information, smart home control, and more..

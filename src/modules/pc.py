@@ -1,32 +1,25 @@
 #Command: pc open [name]
 #Command: pc sleep
 #Command: pc restart
-#Command: pc eval [command to run]
 import os
 
-def control_pc(command):
+def execute(args):
+    if args is None or len(args) == 0:
+        return ("No command provided.")
+    
+    command = args.get("action", None).lower()  # Convert command to lowercase for case-insensitive matching
+
     if "open" in command:
-        #get the application name
-        words = command.split()
-        index = words.index("open")
-        app_name = " ".join(words[index + 1:])
+        app_name = args.get("application_name", None)
         #open the application
         os.system(f"{app_name}")
-        print(f"Opening {app_name}.")
+        return(f"Opening {app_name}.")
 
     elif "sleep" in command:
         os.system("shutdown /h")
-        print("Sleeping computer.")
+        return("Sleeping computer.")
     elif "restart" in command:
         os.system("shutdown /r /t 0")
-        print("Restarting computer.")
-    elif "eval" in command:
-        # Extract the command to run
-        words = command.split()
-        index = words.index("eval")
-        command_to_run = " ".join(words[index + 1:])
-        # Run the command
-        os.system(command_to_run)
-        print("Command executed.")
+        return("Restarting computer.")
     else:
-        print("PC command not recognized.")
+        return("PC command not recognized.")

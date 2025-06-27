@@ -7,24 +7,32 @@
 import os
 from utils.windows_media import get_volume, set_volume, mute_volume, unmute_volume
 
-def control_media(command):
-    if "play music" in command:
-        os.system("start spotify")  # Adjust this for the media player you use
-        print("Playing music.")
+def execute(args):
+    if args is None or len(args) == 0:
+        return("No command provided.")
+        return
+    
+    command = args.get("action", None).lower()  # Convert command to lowercase for case-insensitive matching
+    volume_level = args.get("volume_level", None)  # Get volume level if provided
+
+    if "play" in command:
+        os.system("play")
+        return("Playing music.")
     elif "pause" in command:
         os.system("pause")
-        print("Music paused.")
+        return("Music paused.")
     elif "unmute" in command:
         unmute_volume()
-        print("Volume unmuted.")
+        return("Volume unmuted.")
     elif "mute" in command:
         mute_volume()
-        print("Volume muted.")
-    elif "set volume" in command:
+        return("Volume muted.")
+    elif "set_volume" in command:
         # Extract the volume level from the command
-        words = command.split()
-        index = words.index("volume")
-        level = float(words[index + 1])
+        if volume_level is None:
+            return("No volume level specified.")
+            return
+        level = float(volume_level)
         #if level is not in the command, dont do anything
         if level is None:
             return
@@ -34,6 +42,6 @@ def control_media(command):
         elif level < -65.25:
             level = -65.25
         set_volume(level)
-        print(f"Volume set to {level}.")
+        return(f"Volume set to {level}.")
     else:
-        print("Media command not recognized.")
+        return("Media command not recognized.")
