@@ -10,12 +10,14 @@ from dotenv import load_dotenv
 # --- Environment Setup ---
 load_dotenv()
 api_key = os.getenv('GEMINI_API_KEY')
+spotify_premium = os.getenv('SPOTIFY_PREMIUM', '0') == '1'
 client = genai.Client(api_key=api_key)
 
-HISTORY_FILE = "utils/history.json"
+HISTORY_FILE = "src/utils/history.json"
 MAX_HISTORY = 100
-MEMORY_FILE = "utils/memory.json"
-PROMPT_FILE = "utils/prompt.txt"
+MEMORY_FILE = "src/utils/memory.json"
+PROMPT_FILE = "src/utils/prompt.txt"
+
 
 # --- Conversation History Management ---
 
@@ -181,18 +183,47 @@ def get_commandline_functions():
         "name": "commandline",
         "description": "Execute a command in the system command line and return the output.",
         "parameters": {
-            "type": "object",
-            "properties": {
-                "command": {
-                    "type": "string",
-                    "description": "The command to execute in the system shell.",
+                "type": "object",
+                "properties": {
+                    "command": {
+                        "type": "string",
+                        "description": "The command to execute in the system shell.",
+                    },
+                    "path": {
+                        "type": "string",
+                        "description": "The working directory for the command execution.",
+                    }
                 },
-                "path": {
+                "required": ["command", "path"]
+            },
+        }
+
+def get_spotify_functions():
+    """Returns the function declaration for controlling Spotify playback."""
+    if not spotify_premium: # If not premium, return empty. api will not work
+        return {}
+    else:
+        return {
+            "name": "spotify",
+            "description": "Control Spotify playback: play, pause, next, previous, or set volume.",
+            "parameters": {
+                "type": "object",
+            "properties": {
+                "action": {
                     "type": "string",
-                    "description": "The working directory for the command execution.",
+                    "enum": ["play", "pause", "next", "previous", "volume"],
+                    "description": "Spotify action: play, pause, next track, previous track, or set volume.",
+                },
+                "song_name": {
+                    "type": "string",
+                    "description": "Name of the song to play (for 'play' action). if no name, just resuming playback",
+                },
+                "volume_level": {
+                    "type": "number",
+                    "description": "Volume level for 'volume'.",
                 }
             },
-            "required": ["command", "path"]
+            "required": ["action"],
         },
     }
 
