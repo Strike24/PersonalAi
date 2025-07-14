@@ -72,3 +72,9 @@ Using Gemini's Function Calling feature, the assistant can execute Python functi
 - **Command Line**: Execute command line commands.
   Coming soon: Reminders, weather information, smart home control, and more..
 ![Untitledvideo-MadewithClipchamp-ezgif com-video-to-gif-converter](https://github.com/user-attachments/assets/f97ebf02-e275-4e61-8568-1b0933acd6e6)
+
+### Other Examples
+<img width="1737" height="709" alt="image" src="https://github.com/user-attachments/assets/10853a67-9be4-4459-9421-d0fbb528c61c" />
+> Initalizing a javascript project in a directory
+<img width="1743" height="449" alt="image" src="https://github.com/user-attachments/assets/296b74f3-3d2f-4062-9bc3-fd0321eb4d0b" />
+<img width="1750" height="458" alt="image" src="https://github.com/user-attachments/assets/f55a9970-7fd8-4418-9445-11c3fd6a23e5" />
