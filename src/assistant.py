@@ -227,6 +227,32 @@ def get_spotify_functions():
         },
     }
 
+def get_sensibo_functions():
+    """Returns the function declaration for controlling Sensibo AC devices."""
+    return {
+        "name": "sensibo",
+        "description": "Control Sensibo AC devices: turn on/off, set temperature.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "action": {
+                    "type": "string",
+                    "enum": ["on", "off", "set_temp"],
+                    "description": "Action to perform on the Sensibo device.",
+                },
+                "device_name": {
+                    "type": "string",
+                    "description": "Name of the Sensibo device/room.",
+                },
+                "temp": {
+                    "type": "number",
+                    "description": "Temperature to set (for 'set_temp' action).",
+                }
+            },
+            "required": ["action", "device_name"],
+        },
+    }
+
 # --- AI Tool Configuration ---
 
 def get_grounding_tool():
@@ -238,7 +264,8 @@ def get_grounding_tool():
             get_pc_functions(),
             get_files_functions(),
             get_memory_functions(),
-            get_commandline_functions()
+            get_commandline_functions(),
+            get_spotify_functions()
         ],
     )
 
