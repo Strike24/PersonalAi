@@ -70,6 +70,7 @@ Using Gemini's Function Calling feature, the assistant can execute Python functi
 - **System Commands**: Execute system commands like shutdown and restart.
 - **Memory Management**: Remember and recall information.
 - **Command Line**: Execute command line commands.
+- **Spotify Integration**: Control spotify playback and play songs. (Premium Required)
   Coming soon: Reminders, weather information, smart home control, and more..
 ![Untitledvideo-MadewithClipchamp-ezgif com-video-to-gif-converter](https://github.com/user-attachments/assets/f97ebf02-e275-4e61-8568-1b0933acd6e6)
 
