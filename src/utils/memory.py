@@ -2,7 +2,7 @@
 import json
 import os
 
-MEMORY_FILE = "./memory.json"
+MEMORY_FILE = "../../memory.json"
 
 def save_to_memory(topic, info):
     # Load existing memory
