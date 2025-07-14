@@ -17,17 +17,14 @@ import shutil
 def execute(args):
     if args is None or len(args) == 0:
         return("No command provided.")
-        return
     
     command = args.get("action", None).lower()  # Convert command to lowercase for case-insensitive matching
 
 
     if "createdir" in command:
-        return("Creating directory...")
-        path =  args.get("path", None)  # Get the path from the arguments
+        path = args.get("path", None)  # Get the path from the arguments
         if path is None:
             return("No path provided for directory creation.")
-            return
         try:
             # Create the directory
             os.makedirs(path)
@@ -52,11 +49,9 @@ def execute(args):
         path = args.get("path", None)  # Get the path from the arguments
         if path is None:
             return("No path provided for file writing.")
-            return
         content  = args.get("content", None)  # Get the content from the arguments
         if content is None:
             return("No content provided for file writing.")
-            return
         
         # Write the content to the file
         with open(f"{path}", "w") as file:
@@ -71,14 +66,12 @@ def execute(args):
         # Read the content of the file
         with open(f"{path}", "r") as file:
             content = file.read()
-        return(f"Content of {path}:")
-        return(content)
+        return(f"Content of {path}:" f"\n{content}")
 
     elif "delete" in command:
        path = args.get("path", None)  # Get the path from the arguments
        if path is None:
             return("No path provided for file deletion.")
-            return
        # Delete the file
        os.remove(f"{path}")
        return(f"File deleted from {path}.")
@@ -88,7 +81,6 @@ def execute(args):
         dest_path = args.get("destination_path", None)  # Get the destination path from the arguments
         if source_path is None or dest_path is None:
             return("Source or destination path not provided for file copying.")
-            return
         # Copy the file
         shutil.copy(f"{source_path}", f"{dest_path}")
         return(f"File copied from {source_path} to {dest_path}.")
@@ -96,9 +88,7 @@ def execute(args):
         source_path = args.get("source_path", None)
         dest_path = args.get("destination_path", None)
         if source_path is None or dest_path is None:
-            return("Source or destination path not provided for file moving.")
-            return
-        # Move the file
+            return("Source or destination path not provided for file moving.")        # Move the file
         shutil.move(f"{source_path}", f"{dest_path}")
         return(f"File moved from {source_path} to {dest_path}.")
     elif "rename" in command:
@@ -107,7 +97,6 @@ def execute(args):
         new_name =   args.get("new_name", None)  # Get the new name from the arguments
         if path is None or old_name is None or new_name is None:
             return("Path, old name or new name not provided for file renaming.")
-            return
         # Rename the file
         os.rename(f"{path}/{old_name}", f"{path}/{new_name}")
         return(f"File {old_name} renamed to {new_name} in {path}.")
@@ -116,12 +105,12 @@ def execute(args):
         path = args.get("path", None)
         if path is None:
             return("No path provided for listing files.")
-            return
         # List the files in the directory, make it look nice
         files = os.listdir(path)
-        return(f"Files in {path}:")
+        str = f"Files in {path}:"
         for file in files:
-            return(file)
+            str += f"\n- {file}"
+        return str
 
     elif "search" in command:
         # Extract the path and file name from the command
@@ -129,13 +118,11 @@ def execute(args):
         file_name = args.get("file_name", None)
         if path is None or file_name is None:
             return("Path or file name not provided for file searching.")
-            return
         # Search for the file in the directory, and its subdirectories
         # return the path of the file if found or a message if not found
         for root, dirs, files in os.walk(path):
             if file_name in files:
                 return(f"File found at: {os.path.join(root, file_name)}")
-                break
         else:
             return(f"File '{file_name}' not found in '{path}' or its subdirectories.")
     else:

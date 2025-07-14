@@ -162,3 +162,5 @@ cython_debug/
 #.idea/
 memory.json
 .env
+history.json
+prompt.txt
