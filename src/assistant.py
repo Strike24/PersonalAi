@@ -12,10 +12,10 @@ load_dotenv()
 api_key = os.getenv('GEMINI_API_KEY')
 client = genai.Client(api_key=api_key)
 
-HISTORY_FILE = "history.json"
+HISTORY_FILE = "utils/history.json"
 MAX_HISTORY = 100
-MEMORY_FILE = "memory.json"
-PROMPT_FILE = "prompt.txt"
+MEMORY_FILE = "utils/memory.json"
+PROMPT_FILE = "utils/prompt.txt"
 
 # --- Conversation History Management ---
 

@@ -163,4 +163,3 @@ cython_debug/
 memory.json
 .env
 history.json
-prompt.txt

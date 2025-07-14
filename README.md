@@ -69,4 +69,5 @@ Using Gemini's Function Calling feature, the assistant can execute Python functi
 - **File Management**: Create, delete, rename, list and search for files and folders.
 - **System Commands**: Execute system commands like shutdown and restart.
 - **Memory Management**: Remember and recall information.
+- **Command Line**: Execute command line commands.
   Coming soon: Reminders, weather information, smart home control, and more..
