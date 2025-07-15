@@ -6,6 +6,11 @@ from colorama import Fore, Style
 from google import genai
 from google.genai import types
 from dotenv import load_dotenv
+import keyboard
+from PIL import ImageGrab, Image
+
+
+# Register the hotkey (Ctrl+V)
 
 # --- Environment Setup ---
 load_dotenv()
@@ -92,18 +97,22 @@ def get_pc_functions():
     """Returns the function declaration for controlling PC actions."""
     return {
         "name": "pc",
-        "description": "Control the PC: open files, sleep, or restart.",
+        "description": "Control the PC: open files, open websites, sleep, or restart.",
         "parameters": {
             "type": "object",
             "properties": {
                 "action": {
                     "type": "string",
-                    "enum": ["open", "sleep", "restart"],
-                    "description": "PC action: open an application, sleep, or restart.",
+                    "enum": ["open", "sleep", "restart", "open_website"],
+                    "description": "PC action: open an application, open a website, sleep, or restart.",
                 },
                 "application_name": {
                     "type": "string",
                     "description": "Full path of the file to open (for 'open' action).",
+                },
+                "website_url": {
+                    "type": "string",
+                    "description": "URL of the website to open (for 'open_website' action).",
                 }
             },
             "required": ["action"],
@@ -227,6 +236,8 @@ def get_spotify_functions():
         },
     }
 
+
+
 # --- AI Tool Configuration ---
 
 def get_grounding_tool():
@@ -255,6 +266,33 @@ def get_content_config():
         ),
     )
 
+# --- Image Input Handling ---
+current_image_path = None
+keyboard.add_hotkey('ctrl+v', lambda: on_image_paste())
+
+def on_image_paste():
+    """Handles the Ctrl+V hotkey to paste an image from the clipboard.
+    Returns the path of the saved image."""
+    global current_image_path
+    try:
+        image = ImageGrab.grabclipboard()
+        path = os.path.join(os.getcwd(), "pasted_image.png")
+        if image is not None:
+            print(Fore.GREEN + "[ ./pasted_image.png ]" + Style.RESET_ALL)
+            image.save(path, "PNG")
+            current_image_path = path
+        else:
+            current_image_path = None
+    except Exception as e:
+        print(Fore.RED + f"Error pasting image: {e}" + Style.RESET_ALL)
+        current_image_path = None
+
+def get_current_image_path():
+    """Returns the path of the currently pasted image, if any."""
+    if current_image_path and os.path.exists(current_image_path):
+        return current_image_path
+    return None
+
 # --- Helper Functions ---
 
 def load_module(module_name):
@@ -271,9 +309,9 @@ def handle_memory_function(function_args):
     info = function_args.get("info")
     if topic and info:
         save_to_memory(topic, info)
-        print(Fore.GREEN + f"Saved information under topic '{topic}'." + Style.RESET_ALL)
+        print(f"Saved information under topic '{topic}'.")
     else:
-        print(Fore.RED + "Invalid memory function call." + Style.RESET_ALL)
+        print("Invalid memory function call.")
 
 def handle_function_call(function_name, function_args, history):
     """Handles dynamic function calls by loading and executing the appropriate module.
@@ -319,10 +357,16 @@ def process_user_input(user_input, history, config):
     """Processes user input, sends it to Gemini, handles function calls, and lets the AI answer after function calls."""
     history = add_to_history(history, "user", user_input)
     messages = build_gemini_messages(history)
+    # If an image is pasted, add it to the messages
+    image_path = get_current_image_path()
+    if image_path is not None and os.path.exists(image_path):
+        image = Image.open(image_path)
+        messages.append(image)
+
     response = client.models.generate_content(
         model="gemini-2.5-flash",
-        contents=messages,
-        config=config
+        config=config,
+        contents=messages
     )
     parts = response.candidates[0].content.parts
     function_called = False
@@ -345,12 +389,18 @@ def process_user_input(user_input, history, config):
         )
         parts = response.candidates[0].content.parts
         ai_text = parts[0].text
-        print_ai_response("RESPONSE :"+ ai_text)
+        print_ai_response(ai_text)
         history = add_to_history(history, "assistant", ai_text)
     elif parts and hasattr(parts[0], "text"):
         ai_text = parts[0].text
         print_ai_response(ai_text)
         history = add_to_history(history, "assistant", ai_text)
+
+    if image_path is not None and os.path.exists(image_path):
+        try:
+            os.remove(image_path)  # Clean up the pasted image after processing
+        except Exception as e:
+            print(Fore.RED + f"Error removing pasted image: {e}" + Style.RESET_ALL)
     return history
 
 def clear_history():
@@ -382,13 +432,9 @@ def main():
             continue
         history = process_user_input(user_input, history, config)
 
-if __name__ == "__main__":
-    print(Fore.MAGENTA + Style.BRIGHT + r"""
-                                                                                          
-                                                                                          
-""" + Fore.LIGHTBLACK_EX + r"""█████╗█████╗█████╗█████╗█████╗█████╗█████╗█████╗█████╗█████╗█████╗█████╗█████╗█████╗█████╗
-""" + Fore.LIGHTBLACK_EX + r"""╚════╝╚════╝╚════╝╚════╝╚════╝╚════╝╚════╝╚════╝╚════╝╚════╝╚════╝╚════╝╚════╝╚════╝╚════╝
-""" + Fore.MAGENTA + r"""                                                                                          
+def getLandingText():
+   return Fore.MAGENTA + Style.BRIGHT + r"""
+
                                                                                           
                                                                                           
 """ + Fore.LIGHTRED_EX + r"""    ██████╗ ███████╗██████╗ ███████╗ ██████╗ ███╗   ██╗ █████╗ ██╗          █████╗ ██╗    
@@ -400,8 +446,12 @@ if __name__ == "__main__":
 """ + Fore.MAGENTA + r"""                                                                                          
                                                                                           
                                                                                           
-""" + Fore.LIGHTBLACK_EX + r"""█████╗█████╗█████╗█████╗█████╗█████╗█████╗█████╗█████╗█████╗█████╗█████╗█████╗█████╗█████╗
-""" + Fore.LIGHTBLACK_EX + r"""╚════╝╚════╝╚════╝╚════╝╚════╝╚════╝╚════╝╚════╝╚════╝╚════╝╚════╝╚════╝╚════╝╚════╝╚════╝
-""" + Style.RESET_ALL)
+"""
+if __name__ == "__main__":
+    try:
+        print(getLandingText())
+        main()
+    except KeyboardInterrupt:
+        print(Fore.RED + "\nProgram interrupted." + Style.RESET_ALL)
+        exit(0)
 
-    main()

@@ -73,7 +73,12 @@ def execute(args):
        if path is None:
             return("No path provided for file deletion.")
        # Delete the file
-       os.remove(f"{path}")
+       try:
+           os.remove(f"{path}")
+       except FileNotFoundError:
+            return(f"Error: File '{path}' not found.")
+       except PermissionError:
+            return(f"Error: Permission denied to delete file '{path}'.")
        return(f"File deleted from {path}.")
 
     elif "copy" in command:
