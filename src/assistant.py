@@ -12,8 +12,10 @@ The assistant can:
 - Process images from clipboard
 - Integrate with Spotify (if premium)
 """
+from html import parser
 import os
 from colorama import Fore, Style
+import argparse
 
 # Import our refactored modules
 from gemini.client import GeminiClient, load_system_prompt
@@ -30,7 +32,7 @@ def main():
     # Load system configuration
     system_prompt = load_system_prompt()
     config = gemini_client.get_content_config(system_prompt)
-    
+   
     # Load conversation history
     history = load_history()
 
@@ -74,7 +76,11 @@ def get_landing_text():
 
 if __name__ == "__main__":
     try:
-        print(get_landing_text())
+        parser = argparse.ArgumentParser()
+        parser.add_argument('--no-ascii', action='store_true', help='Disable ASCII art in the terminal')
+        args = parser.parse_args()
+        if not args.no_ascii:
+            print(get_landing_text())
         main()
     except KeyboardInterrupt:
         print(Fore.RED + "\nProgram interrupted." + Style.RESET_ALL)
