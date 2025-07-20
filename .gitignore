@@ -163,3 +163,9 @@ cython_debug/
 memory.json
 .env
 history.json
+
+# PersonalAI specific files
+src/modules/torrent_config.py
+src/utils/memory.json
+src/utils/history.json
+pasted_image.png

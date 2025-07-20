@@ -72,9 +72,10 @@ Using Gemini's Function Calling feature, the assistant can execute Python functi
 - **Command Line**: Execute command line commands.
 - **Spotify Integration**: Control spotify playback and play songs. (Premium Required)
   Coming soon: Reminders, weather information, smart home control, and more..
-![Untitledvideo-MadewithClipchamp-ezgif com-video-to-gif-converter](https://github.com/user-attachments/assets/f97ebf02-e275-4e61-8568-1b0933acd6e6)
+  ![Untitledvideo-MadewithClipchamp-ezgif com-video-to-gif-converter](https://github.com/user-attachments/assets/f97ebf02-e275-4e61-8568-1b0933acd6e6)
 
 ### Other Examples
+
 <img width="1737" height="709" alt="image" src="https://github.com/user-attachments/assets/10853a67-9be4-4459-9421-d0fbb528c61c" />
 Initalizing a javascript project in a directory
 

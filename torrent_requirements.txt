@@ -1,0 +1,5 @@
+# Requirements for torrent module
+beautifulsoup4>=4.12.0
+requests>=2.31.0
+qbittorrent-api>=2023.11.57
+lxml>=4.9.0

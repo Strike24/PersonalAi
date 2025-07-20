@@ -1,0 +1,41 @@
+# PersonalAI Requirements
+# Core dependencies for the Personal AI Assistant
+
+# ====== CORE GEMINI API ======
+google-genai>=0.3.0
+python-dotenv>=1.0.0
+
+# ====== UI AND CONSOLE ======
+colorama>=0.4.6
+
+# ====== IMAGE PROCESSING ======
+Pillow>=10.0.0
+keyboard>=0.13.5
+
+# ====== AUDIO CONTROL (Windows) ======
+pycaw>=20230407
+comtypes>=1.4.0
+
+# ====== SPOTIFY INTEGRATION ======
+spotipy>=2.22.1
+
+# ====== TORRENT FUNCTIONALITY ======
+qbittorrent-api>=2023.11.57
+beautifulsoup4>=4.12.0
+requests>=2.31.0
+lxml>=4.9.0
+
+# ====== WEB SCRAPING (for legal torrent sites only) ======
+urllib3>=2.0.0
+fake-useragent>=1.4.0
+
+# ====== OPTIONAL DEPENDENCIES ======
+# Uncomment if needed:
+# pywin32>=306      # For advanced Windows integration
+
+# ====== DEVELOPMENT DEPENDENCIES ======
+# Uncomment for development:
+# pytest>=7.4.0
+# black>=23.0.0
+# flake8>=6.0.0
+# mypy>=1.5.0

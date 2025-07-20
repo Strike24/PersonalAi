@@ -192,6 +192,33 @@ def get_spotify_functions():
     }
 
 
+def get_torrent_functions():
+    """Returns the function declaration for torrent operations."""
+    return {
+        "name": "torrent",
+        "description": "Search for torrents and manage downloads via qBittorrent.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "action": {
+                    "type": "string",
+                    "enum": ["search", "add", "list"],
+                    "description": "Torrent action: search for torrents, add magnet link to qBittorrent, or list active torrents.",
+                },
+                "query": {
+                    "type": "string",
+                    "description": "Search query for finding torrents (for 'search' action).",
+                },
+                "magnet_link": {
+                    "type": "string",
+                    "description": "Magnet link to add to qBittorrent (for 'add' action).",
+                }
+            },
+            "required": ["action"],
+        },
+    }
+
+
 def get_all_function_declarations():
     """Returns a list of all available function declarations."""
     return [
@@ -199,5 +226,6 @@ def get_all_function_declarations():
         get_pc_functions(),
         get_files_functions(),
         get_memory_functions(),
-        get_commandline_functions()
+        get_commandline_functions(),
+        get_torrent_functions()
     ]
