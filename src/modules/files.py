@@ -110,12 +110,39 @@ def execute(args):
         path = args.get("path", None)
         if path is None:
             return("No path provided for listing files.")
-        # List the files in the directory, make it look nice
+        if not os.path.isdir(path):
+            return(f"'{path}' is not a valid directory.")
+
         files = os.listdir(path)
-        str = f"Files in {path}:"
+        # Gather file info: name, created, modified
+        file_infos = []
         for file in files:
-            str += f"\n- {file}"
-        return str
+            file_path = os.path.join(path, file)
+            try:
+                created = os.path.getctime(file_path)
+                modified = os.path.getmtime(file_path)
+                file_infos.append({
+                    "name": file,
+                    "created": created,
+                    "modified": modified
+                })
+            except Exception as e:
+                file_infos.append({
+                    "name": file,
+                    "created": None,
+                    "modified": None
+                })
+
+        # Sort by modified time, newest first
+        file_infos.sort(key=lambda x: x["modified"] if x["modified"] is not None else 0, reverse=True)
+
+        from datetime import datetime
+        result_lines = [f"Files in {path} (newest to oldest):"]
+        for info in file_infos:
+            created_str = datetime.fromtimestamp(info["created"]).strftime('%Y-%m-%d %H:%M:%S') if info["created"] else "Unknown"
+            modified_str = datetime.fromtimestamp(info["modified"]).strftime('%Y-%m-%d %H:%M:%S') if info["modified"] else "Unknown"
+            result_lines.append(f"- {info['name']} (modified: {modified_str}, created: {created_str})")
+        return "\n".join(result_lines)
 
     elif "search" in command:
         # Extract the path and file name from the command

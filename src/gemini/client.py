@@ -14,6 +14,7 @@ from dotenv import load_dotenv
 from google import genai
 from google.genai import types
 from .function_declarations import get_all_function_declarations
+from datetime import datetime
 
 
 # Load environment variables
@@ -59,10 +60,11 @@ class GeminiClient:
 def load_system_prompt():
     """Load the system prompt from prompt.txt."""
     PROMPT_FILE = "src/utils/prompt.txt"
+    current_date = datetime.now().strftime("%Y-%m-%d")
     
     if os.path.exists(PROMPT_FILE):
         with open(PROMPT_FILE, "r", encoding="utf-8") as f:
-            return f.read()
+            return f.read() + f"\n\nCurrent date: {current_date}, time: {datetime.now().strftime('%H:%M:%S')}"
     
     print("System prompt file not found! Using default prompt.\nCreate a prompt.txt file for customized instructions.")
     return "You are a helpful AI assistant."

@@ -1,8 +1,7 @@
 
 import json
 import os
-
-MEMORY_FILE = "./memory.json"
+MEMORY_FILE = os.getenv('MEMORY_FILE', 'src/utils/memory.json')
 
 def save_to_memory(topic, info):
     # Load existing memory
