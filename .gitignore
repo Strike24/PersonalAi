@@ -169,3 +169,7 @@ src/modules/torrent_config.py
 src/utils/memory.json
 src/utils/history.json
 pasted_image.png
+launch.cmd
+gmail_credentials.json
+gmail_token.json
+

@@ -81,6 +81,8 @@ if __name__ == "__main__":
         args = parser.parse_args()
         if not args.no_ascii:
             print(get_landing_text())
+        else :
+            print(Fore.MAGENTA + Style.BRIGHT + "AI Assistant ✨" + Style.RESET_ALL)
         main()
     except KeyboardInterrupt:
         print(Fore.RED + "\nProgram interrupted." + Style.RESET_ALL)

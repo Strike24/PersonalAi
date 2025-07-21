@@ -219,6 +219,41 @@ def get_torrent_functions():
     }
 
 
+def get_gmail_functions():
+    """Returns the function declaration for Gmail operations."""
+    return {
+        "name": "gmail",
+        "description": "Send emails through Gmail with or without attachments.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "action": {
+                    "type": "string",
+                    "enum": ["send", "send_with_attachment"],
+                    "description": "Gmail action: send regular email or send email with attachment.",
+                },
+                "to": {
+                    "type": "string",
+                    "description": "Recipient email address.",
+                },
+                "subject": {
+                    "type": "string",
+                    "description": "Email subject line.",
+                },
+                "body": {
+                    "type": "string",
+                    "description": "Email body content.",
+                },
+                "attachment_path": {
+                    "type": "string",
+                    "description": "Full path to the attachment file (for 'send_with_attachment' action).",
+                }
+            },
+            "required": ["action", "to"],
+        },
+    }
+
+
 def get_all_function_declarations():
     """Returns a list of all available function declarations."""
     return [
@@ -227,5 +262,6 @@ def get_all_function_declarations():
         get_files_functions(),
         get_memory_functions(),
         get_commandline_functions(),
-        get_torrent_functions()
+        get_torrent_functions(),
+        get_gmail_functions()
     ]
