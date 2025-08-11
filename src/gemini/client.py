@@ -49,12 +49,38 @@ class GeminiClient:
         )
     
     def generate_content(self, model_name, config, contents):
-        """Generate content using the Gemini API."""
-        return self.client.models.generate_content(
-            model=model_name,
-            config=config,
-            contents=contents
-        )
+        """Generate content using the Gemini API with retry logic and error handling."""
+        import time
+        from google.genai.errors import ServerError, ClientError, APIError
+        
+        max_retries = 3
+        retry_delay = 2  # seconds
+        
+        for attempt in range(max_retries):
+            try:
+                return self.client.models.generate_content(
+                    model=model_name,
+                    config=config,
+                    contents=contents
+                )
+            except ServerError as e:
+                if e.status_code == 500 and attempt < max_retries - 1:
+                    print(f"⚠️  Gemini API server error (attempt {attempt + 1}/{max_retries}). Retrying in {retry_delay} seconds...")
+                    time.sleep(retry_delay)
+                    retry_delay *= 2  # Exponential backoff
+                    continue
+                else:
+                    print(f"❌ Gemini API server error after {max_retries} attempts: {e.message}")
+                    raise APIError(f"Gemini API is temporarily unavailable. Please try again later. (Error: {e.message})")
+            except ClientError as e:
+                print(f"❌ Gemini API client error: {e.message}")
+                raise APIError(f"Invalid request to Gemini API: {e.message}")
+            except Exception as e:
+                print(f"❌ Unexpected error communicating with Gemini API: {str(e)}")
+                raise APIError(f"Failed to communicate with Gemini API: {str(e)}")
+        
+        # This shouldn't be reached, but just in case
+        raise APIError("Failed to generate content after multiple retries")
 
 
 def load_system_prompt():
