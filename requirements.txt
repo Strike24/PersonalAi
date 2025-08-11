@@ -34,6 +34,9 @@ lxml>=4.9.0
 urllib3>=2.0.0
 fake-useragent>=1.4.0
 
+# ====== PDF AND DOCUMENT CREATION ======
+reportlab>=4.0.0
+
 # ====== OPTIONAL DEPENDENCIES ======
 # Uncomment if needed:
 # pywin32>=306      # For advanced Windows integration

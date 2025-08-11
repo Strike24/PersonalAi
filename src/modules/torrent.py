@@ -52,10 +52,11 @@ def execute(args):
     
     elif action == "add":
         magnet_link = args.get("magnet_link", "")
+        download_path = args.get("download_path", None)
         if not magnet_link:
             return "No magnet link provided."
-        return add_magnet_to_qbittorrent(magnet_link)
-    
+        return add_magnet_to_qbittorrent(magnet_link, download_path)
+
     elif action == "list":
         return list_active_torrents()
     
@@ -86,15 +87,7 @@ def search_torrents(query):
             results.extend(tpb_results)
         except Exception as e:
             pass
-        
-        # Try alternative search if no results
-        if not results:
-            try:
-                alt_results = search_alternative(query)
-                results.extend(alt_results)
-            except Exception as e:
-                pass
-        
+
         if not results:
             return f"No torrents found for '{query}'. This might be due to:\n- Sites being blocked/down\n- Network issues\n- Anti-bot protection"
         
@@ -338,13 +331,14 @@ def search_alternative(query):
         return []
 
 
-def add_magnet_to_qbittorrent(magnet_link):
+def add_magnet_to_qbittorrent(magnet_link, download_path):
     """
     Add magnet link to qBittorrent.
     
     Args:
         magnet_link (str): Magnet link to add
-    
+        download_path (str): Path to save the downloaded file
+
     Returns:
         str: Result message
     """
@@ -373,7 +367,15 @@ def add_magnet_to_qbittorrent(magnet_link):
             return f"Cannot connect to qBittorrent: {str(e)}"
         
         # Add the magnet link
-        qbt_client.torrents_add(urls=magnet_link)
+        if not download_path:
+            download_path = None  # Use default path if not provided
+        else :
+            # Ensure download path exists
+            if not os.path.exists(download_path):
+                download_path = None  # Use default path if provided path does not exist
+                print(f"Download path '{download_path}' can't be found. Using default path.")
+
+        qbt_client.torrents_add(urls=magnet_link, save_path=download_path)
         
         return "Successfully added magnet link to qBittorrent"
         
