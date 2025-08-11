@@ -47,22 +47,26 @@ def get_pc_functions():
     """Returns the function declaration for controlling PC actions."""
     return {
         "name": "pc",
-        "description": "Control the PC: open files, open websites, sleep, or restart.",
+        "description": "Control the PC: open applications, open websites, sleep, restart, shutdown, lock screen, or take screenshots.",
         "parameters": {
             "type": "object",
             "properties": {
                 "action": {
                     "type": "string",
-                    "enum": ["open", "sleep", "restart", "open_website"],
-                    "description": "PC action: open an application, open a website, sleep, or restart.",
+                    "enum": ["open", "open_website", "sleep", "restart", "shutdown", "lock", "screenshot"],
+                    "description": "PC action: open an application, open a website, sleep, restart, shutdown, lock screen, or take a screenshot.",
                 },
                 "application_name": {
                     "type": "string",
-                    "description": "Full path of the file to open (for 'open' action).",
+                    "description": "Name or path of the application to open (for 'open' action). Can be a simple name like 'notepad' or full path.",
                 },
                 "website_url": {
                     "type": "string",
-                    "description": "URL of the website to open (for 'open_website' action).",
+                    "description": "URL of the website to open (for 'open_website' action). Protocol (http/https) is optional.",
+                },
+                "path": {
+                    "type": "string",
+                    "description": "File path where to save the screenshot (for 'screenshot' action). If not provided, saves with timestamp in current directory.",
                 }
             },
             "required": ["action"],
@@ -74,7 +78,7 @@ def get_files_functions():
     """Returns the function declaration for managing files and directories."""
     return {
         "name": "files",
-        "description": "Manage files and directories: create, write, read, delete, copy, move, rename, list, search, or create a directory.",
+        "description": "Manage files and directories: create, write, read, delete, copy, move, rename, list, search, create a directory, create PDF files, or create various document types.",
         "parameters": {
             "type": "object",
             "properties": {
@@ -82,7 +86,7 @@ def get_files_functions():
                     "type": "string",
                     "enum": [
                         "create", "write", "read", "delete", "copy", "move",
-                        "rename", "list", "search", "createDir"
+                        "rename", "list", "search", "createDir", "createPdf", "createDoc"
                     ],
                     "description": "File/directory action.",
                 },
@@ -92,7 +96,7 @@ def get_files_functions():
                 },
                 "content": {
                     "type": "string",
-                    "description": "Content to write (for 'write' action).",
+                    "description": "Content to write (for 'write', 'createPdf', 'createDoc' actions).",
                 },
                 "source_path": {
                     "type": "string",
@@ -108,7 +112,20 @@ def get_files_functions():
                 },
                 "file_name": {
                     "type": "string",
-                    "description": "File name to search (for 'search').",
+                    "description": "File name to search (for 'search'). Good only for searching by specific file name.",
+                },
+                "title": {
+                    "type": "string",
+                    "description": "Title for the document (for 'createPdf' action). Defaults to 'Document'.",
+                },
+                "doc_type": {
+                    "type": "string",
+                    "enum": ["pdf", "html", "md", "markdown", "csv", "json", "txt"],
+                    "description": "Type of document to create (for 'createDoc' action): pdf, html, md/markdown, csv, json, or txt.",
+                },
+                "date_filter": {
+                    "type": "string",
+                    "description": "Filter files by date (for 'list' action). Formats: 'YYYY-MM-DD' (exact date), '>= YYYY-MM-DD' or 'after: YYYY-MM-DD' (on or after), '<= YYYY-MM-DD' or 'before: YYYY-MM-DD' (on or before), 'today', 'yesterday', 'last 7 days', 'last week', 'last month'.",
                 }
             },
             "required": ["action", "path"]
@@ -212,7 +229,11 @@ def get_torrent_functions():
                 "magnet_link": {
                     "type": "string",
                     "description": "Magnet link to add to qBittorrent (for 'add' action).",
-                }
+                },
+                "download_path": {
+                    "type": "string",
+                    "description": "Path where to save the downloaded torrent (for 'add' action). Use only if specified.",
+                },
             },
             "required": ["action"],
         },
@@ -223,33 +244,43 @@ def get_gmail_functions():
     """Returns the function declaration for Gmail operations."""
     return {
         "name": "gmail",
-        "description": "Send emails through Gmail with or without attachments.",
+        "description": "Send emails through Gmail with or without attachments, retrieve recent emails, or fetch a specific email by ID.",
         "parameters": {
             "type": "object",
             "properties": {
                 "action": {
                     "type": "string",
-                    "enum": ["send", "send_with_attachment"],
-                    "description": "Gmail action: send regular email or send email with attachment.",
+                    "enum": ["send", "send_with_attachment", "get", "get_by_id"],
+                    "description": "Gmail action: send regular email, send email with attachment, get recent emails, or get a specific email by ID.",
                 },
                 "to": {
                     "type": "string",
-                    "description": "Recipient email address.",
+                    "description": "Recipient email address (required for send actions).",
                 },
                 "subject": {
                     "type": "string",
-                    "description": "Email subject line.",
+                    "description": "Email subject line (for send actions).",
                 },
                 "body": {
                     "type": "string",
-                    "description": "Email body content.",
+                    "description": "Email body content (for send actions).",
                 },
                 "attachment_path": {
                     "type": "string",
                     "description": "Full path to the attachment file (for 'send_with_attachment' action).",
+                },
+                "count": {
+                    "type": "integer",
+                    "description": "Number of recent emails to retrieve (for 'get' action). Defaults to 10 if not specified.",
+                    "minimum": 1,
+                    "maximum": 100
+                },
+                "id": {
+                    "type": "string",
+                    "description": "Gmail message ID (for 'get_by_id' action).",
                 }
             },
-            "required": ["action", "to"],
+            "required": ["action"],
         },
     }
 
