@@ -1,31 +1,68 @@
 from pycaw.pycaw import AudioUtilities, IAudioEndpointVolume
 from ctypes import cast, POINTER
-from comtypes import CLSCTX_ALL
+from comtypes import CLSCTX_ALL, CoInitialize, CoUninitialize
 import time
+import atexit
+from contextlib import contextmanager
+
+# Initialize COM at module level
+try:
+    CoInitialize()
+    atexit.register(CoUninitialize)
+except:
+    pass
+
+@contextmanager
+def volume_interface():
+    """Context manager for safely handling volume interface."""
+    volume = None
+    interface = None
+    try:
+        devices = AudioUtilities.GetSpeakers()
+        interface = devices.Activate(IAudioEndpointVolume._iid_, CLSCTX_ALL, None)
+        volume = cast(interface, POINTER(IAudioEndpointVolume))
+        yield volume
+    except Exception as e:
+        print(f"Error with volume interface: {e}")
+        yield None
+    finally:
+        # Clean up in reverse order
+        volume = None
+        interface = None
+
 def get_volume():
-    devices = AudioUtilities.GetSpeakers()
-    interface = devices.Activate(
-        IAudioEndpointVolume._iid_, CLSCTX_ALL, None)
-    volume = cast(interface, POINTER(IAudioEndpointVolume))
-    return volume.GetMasterVolumeLevel()
+    """Get the current master volume level."""
+    try:
+        with volume_interface() as volume:
+            if volume:
+                return volume.GetMasterVolumeLevel()
+    except Exception as e:
+        print(f"Error getting volume: {e}")
+    return None
 
 def set_volume(level):
-    devices = AudioUtilities.GetSpeakers()
-    interface = devices.Activate(
-        IAudioEndpointVolume._iid_, CLSCTX_ALL, None)
-    volume = cast(interface, POINTER(IAudioEndpointVolume))
-    volume.SetMasterVolumeLevel(level, None)
+    """Set the master volume level."""
+    try:
+        with volume_interface() as volume:
+            if volume:
+                volume.SetMasterVolumeLevel(level, None)
+    except Exception as e:
+        print(f"Error setting volume: {e}")
 
 def mute_volume():
-    devices = AudioUtilities.GetSpeakers()
-    interface = devices.Activate(
-        IAudioEndpointVolume._iid_, CLSCTX_ALL, None)
-    volume = cast(interface, POINTER(IAudioEndpointVolume))
-    volume.SetMute(1, None)
+    """Mute the volume."""
+    try:
+        with volume_interface() as volume:
+            if volume:
+                volume.SetMute(1, None)
+    except Exception as e:
+        print(f"Error muting volume: {e}")
 
 def unmute_volume():
-    devices = AudioUtilities.GetSpeakers()
-    interface = devices.Activate(
-        IAudioEndpointVolume._iid_, CLSCTX_ALL, None)
-    volume = cast(interface, POINTER(IAudioEndpointVolume))
-    volume.SetMute(0, None)
+    """Unmute the volume."""
+    try:
+        with volume_interface() as volume:
+            if volume:
+                volume.SetMute(0, None)
+    except Exception as e:
+        print(f"Error unmuting volume: {e}")

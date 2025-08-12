@@ -355,9 +355,19 @@ def execute(args):
         if path is None:
             return("No path provided for file reading.")
             return
-        # Read the content of the file
-        with open(f"{path}", "r") as file:
-            content = file.read()
+        # Read the content of the file with proper encoding handling
+        try:
+            with open(f"{path}", "r", encoding="utf-8") as file:
+                content = file.read()
+        except UnicodeDecodeError:
+            # Try with different encoding if UTF-8 fails
+            try:
+                with open(f"{path}", "r", encoding="cp1252") as file:
+                    content = file.read()
+            except UnicodeDecodeError:
+                # If both fail, read as binary and decode with error handling
+                with open(f"{path}", "rb") as file:
+                    content = file.read().decode("utf-8", errors="replace")
         return(f"Content of {path}:" f"\n{content}")
 
     elif "delete" in command:

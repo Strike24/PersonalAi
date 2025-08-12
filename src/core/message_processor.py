@@ -61,20 +61,38 @@ def process_user_input(user_input, history, gemini_client, config, image_handler
         history = add_to_history(history, "assistant", "I encountered an unexpected error. Please try your request again.")
         return history
     
-    parts = response.candidates[0].content.parts
-    function_called = False
-    # Handle function calls
-    if hasattr(parts[0], "function_call") and parts[0].function_call:
-        for fn in parts:
-            fn = fn.function_call
-            function_name = fn.name
-            function_args = fn.args
-            print(Fore.LIGHTRED_EX + f"Function call detected: {function_name} with arguments {function_args}" + Style.RESET_ALL + "\n---------------------------------------------------------------")
-            history = handle_function_call(function_name, function_args, history)
-            function_called = True
-
-    # After function call(s), let the AI respond with the updated history
-    if function_called:
+    # Handle compositional function calling with a loop
+    max_function_calls = 10  # Prevent infinite loops
+    function_call_count = 0
+    
+    while function_call_count < max_function_calls:
+        parts = response.candidates[0].content.parts
+        function_called = False
+        text_content = ""
+        
+        # Process all parts in the response
+        for part in parts:
+            if hasattr(part, "function_call") and part.function_call:
+                # Handle function call
+                function_name = part.function_call.name
+                function_args = part.function_call.args
+                print(Fore.LIGHTRED_EX + f"Function call detected: {function_name} with arguments {function_args}" + Style.RESET_ALL + "\n---------------------------------------------------------------")
+                history = handle_function_call(function_name, function_args, history)
+                function_called = True
+                function_call_count += 1
+            elif hasattr(part, "text") and part.text:
+                # Collect text content but don't display it immediately if functions are being called
+                text_content += part.text
+        
+        # If no function was called, display any text content and exit
+        if not function_called:
+            if text_content.strip():
+                print_ai_response(text_content)
+                history = add_to_history(history, "assistant", text_content)
+            break  # Exit the loop since no more function calls are needed
+        
+        # If function(s) were called, don't display the text content (it might be hallucinated)
+        # Instead, get the AI's next response based on the function results
         messages = build_gemini_messages(history)
         try:
             response = gemini_client.generate_content(
@@ -82,17 +100,13 @@ def process_user_input(user_input, history, gemini_client, config, image_handler
                 config=config,
                 contents=messages
             )
-            parts = response.candidates[0].content.parts
-            ai_text = parts[0].text
-            if (ai_text is not None and ai_text.strip()) or len(parts) > 1:
-                print_ai_response(ai_text)
-                history = add_to_history(history, "assistant", ai_text)
         except APIError as e:
             error_msg = f"Function executed successfully, but I couldn't generate a follow-up response due to an API error: {str(e)}"
             print(Fore.YELLOW + error_msg + Style.RESET_ALL)
             fallback_response = "The function was executed successfully, but I'm having trouble generating a response right now."
             print_ai_response(fallback_response)
             history = add_to_history(history, "assistant", fallback_response)
+            break
         except Exception as e:
             # Handle various types of errors more gracefully
             try:
@@ -104,10 +118,15 @@ def process_user_input(user_input, history, gemini_client, config, image_handler
             fallback_response = "The function was executed successfully."
             print_ai_response(fallback_response)
             history = add_to_history(history, "assistant", fallback_response)
-    elif parts and hasattr(parts[0], "text"):
-        ai_text = parts[0].text
-        print_ai_response(ai_text)
-        history = add_to_history(history, "assistant", ai_text)
+            break
+    
+    # Safety check for maximum function calls reached
+    if function_call_count >= max_function_calls:
+        warning_msg = f"⚠️  Maximum function calls ({max_function_calls}) reached. Stopping to prevent infinite loops."
+        print(Fore.YELLOW + warning_msg + Style.RESET_ALL)
+        fallback_response = "I've completed multiple function calls but need to stop here to prevent excessive operations."
+        print_ai_response(fallback_response)
+        history = add_to_history(history, "assistant", fallback_response)
 
     # Clean up the pasted image after processing
     if image_path is not None:

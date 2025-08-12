@@ -43,7 +43,7 @@ def handle_function_call(function_name, function_args, history):
             return history
         print(Style.DIM + Fore.WHITE + str(res) + Style.RESET_ALL)
         # Add function response to history as assistant message
-        history = add_to_history(history, "assistant", str(res))
+        history = add_to_history(history, "user", str(res))
         return history
     else:
         print(Fore.RED + f"No executable module found for '{function_name}'." + Style.RESET_ALL)
