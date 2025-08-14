@@ -181,27 +181,29 @@ def get_spotify_functions():
     """Returns the function declaration for controlling Spotify playback."""
     spotify_premium = os.getenv('SPOTIFY_PREMIUM', '0') == '1'
     
-    if not spotify_premium:  # If not premium, return empty. api will not work
-        return {}
-    else:
-        return {
-            "name": "spotify",
-            "description": "Control Spotify playback: play, pause, next, previous, or set volume.",
-            "parameters": {
-                "type": "object",
+    # Always return Spotify functions - the module handles premium vs free logic internally
+    description = "Control Spotify playback: play, pause, next, previous, or set volume. IMPORTANT: Only call this function ONCE per user request. The function will find and open the best available match for the requested song."
+    if not spotify_premium:
+        description += " (Free users: song search and opening in Spotify app/browser. Other controls require premium.)"
+    
+    return {
+        "name": "spotify",
+        "description": description,
+        "parameters": {
+            "type": "object",
             "properties": {
                 "action": {
                     "type": "string",
                     "enum": ["play", "pause", "next", "previous", "volume"],
-                    "description": "Spotify action: play, pause, next track, previous track, or set volume.",
+                    "description": "Spotify action: play, pause, next track, previous track, or set volume. For 'play' action, the system will automatically find the best match for the song.",
                 },
                 "song_name": {
                     "type": "string",
-                    "description": "Name of the song to play (for 'play' action). if no name, just resuming playback",
+                    "description": "Name of the song to play (for 'play' action). Include artist name for better results (e.g., 'This Love by Maroon 5'). The system will find the best available match - do not retry if the exact version isn't found.",
                 },
-                "volume_level": {
-                    "type": "number",
-                    "description": "Volume level for 'volume'.",
+                "level": {
+                    "type": "string",
+                    "description": "Volume level for 'volume' action (0-100). Premium only.",
                 }
             },
             "required": ["action"],
@@ -287,12 +289,15 @@ def get_gmail_functions():
 
 def get_all_function_declarations():
     """Returns a list of all available function declarations."""
-    return [
-        get_media_functions(),
+    functions = [
         get_pc_functions(),
         get_files_functions(),
         get_memory_functions(),
         get_commandline_functions(),
+        get_spotify_functions(),
         get_torrent_functions(),
         get_gmail_functions()
     ]
+    
+    # Filter out empty function declarations
+    return [func for func in functions if func]
