@@ -77,7 +77,21 @@ def process_user_input(user_input, history, gemini_client, config, image_handler
                 function_name = part.function_call.name
                 function_args = part.function_call.args
                 print(Fore.LIGHTRED_EX + f"Function call detected: {function_name} with arguments {function_args}" + Style.RESET_ALL + "\n---------------------------------------------------------------")
+                
+                # Execute the function and get the result
+                history_before = len(history)
                 history = handle_function_call(function_name, function_args, history)
+                
+                # Get the function result from the last added history entry
+                function_result = ""
+                if len(history) > history_before:
+                    function_result = history[-1]["content"]
+                
+                # Add a message to history indicating the function was executed with its result
+                # This helps Gemini understand that the function was called and what the result was
+                function_execution_msg = f"Function '{function_name}' was executed with arguments {function_args}. Result: {function_result}"
+                history = add_to_history(history, "user", function_execution_msg)
+                
                 function_called = True
                 function_call_count += 1
             elif hasattr(part, "text") and part.text:
@@ -110,9 +124,16 @@ def process_user_input(user_input, history, gemini_client, config, image_handler
         except Exception as e:
             # Handle various types of errors more gracefully
             try:
-                error_details = str(e)
+                # Try to get error message safely
+                if hasattr(e, 'message'):
+                    error_details = e.message
+                elif hasattr(e, 'args') and e.args:
+                    error_details = str(e.args[0])
+                else:
+                    error_details = type(e).__name__
             except:
-                error_details = repr(e)
+                error_details = type(e).__name__
+            
             error_msg = f"Function executed successfully, but encountered an unexpected error: {error_details}"
             print(Fore.YELLOW + error_msg + Style.RESET_ALL)
             fallback_response = "The function was executed successfully."
