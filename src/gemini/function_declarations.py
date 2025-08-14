@@ -287,14 +287,61 @@ def get_gmail_functions():
     }
 
 
+def get_bubble_functions():
+    """Returns the function declaration for managing ephemeral working memory bubbles."""
+    return {
+        "name": "bubble",
+        "description": "Manage ephemeral working memory bubbles - temporary information storage that can automatically expire.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "action": {
+                    "type": "string",
+                    "enum": ["create", "update", "get", "delete", "list", "context"],
+                    "description": "Bubble action: create new bubble, update existing bubble, get bubble by key, delete bubble, list all bubbles, or get auto-include context.",
+                },
+                "key": {
+                    "type": "string",
+                    "description": "Bubble identifier/name (required for create, update, get, delete actions).",
+                },
+                "value": {
+                    "type": "string",
+                    "description": "Information to store in the bubble (required for create, optional for update).",
+                },
+                "lifespan": {
+                    "type": "object",
+                    "description": "Expiration settings as object. Examples: {\"minutes\": 30}, {\"hours\": 2}, {\"messages\": 10}, {\"minutes\": 15, \"messages\": 5}. Can also be a string like '30 minutes' or '2 hours'.",
+                    "properties": {
+                        "minutes": {"type": "integer", "minimum": 1},
+                        "hours": {"type": "integer", "minimum": 1},
+                        "seconds": {"type": "integer", "minimum": 1},
+                        "messages": {"type": "integer", "minimum": 1}
+                    }
+                },
+                "on_demand": {
+                    "type": "boolean",
+                    "description": "If false (default), bubble is automatically included in prompts. If true, bubble is only retrieved when explicitly requested.",
+                },
+                "include_expired": {
+                    "type": "boolean",
+                    "description": "For 'list' action: whether to include expired bubbles in the results (default: false).",
+                }
+            },
+            "required": ["action"],
+        },
+    }
+
+
 def get_all_function_declarations():
     """Returns a list of all available function declarations."""
     functions = [
+        get_media_functions(),
         get_pc_functions(),
         get_files_functions(),
         get_memory_functions(),
         get_commandline_functions(),
         get_spotify_functions(),
+        get_bubble_functions(),
         get_torrent_functions(),
         get_gmail_functions()
     ]
