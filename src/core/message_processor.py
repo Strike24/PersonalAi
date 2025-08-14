@@ -8,15 +8,23 @@ from PIL import Image
 from colorama import Fore, Style
 from .history_manager import add_to_history, load_memory_content
 from .function_handler import handle_function_call
+from utils.bubble_manager import get_bubble_context, increment_message_count
 
 
 def build_gemini_messages(history):
     """Convert history to Gemini API message format, with memory context at the start."""
     messages = []
+    
     # Add memory context as the second message
     memory_context = load_memory_content()
     if memory_context.strip():
         messages.append(types.Content(role="user", parts=[types.Part(text=f"Here is my memory context, remember this about me and use it for all future responses:\n{memory_context}")]))
+    
+    # Add bubble context for auto-include bubbles
+    bubble_context = get_bubble_context()
+    if bubble_context.strip():
+        messages.append(types.Content(role="user", parts=[types.Part(text=bubble_context)]))
+    
     # Add conversation history
     for msg in history:
         if msg["role"] == "user":
@@ -34,6 +42,9 @@ def print_ai_response(response):
 def process_user_input(user_input, history, gemini_client, config, image_handler):
     """Processes user input, sends it to Gemini, handles function calls, and lets the AI answer after function calls."""
     from google.genai.errors import APIError
+    
+    # Increment message count for bubble expiration tracking
+    increment_message_count()
     
     history = add_to_history(history, "user", user_input)
     messages = build_gemini_messages(history)
